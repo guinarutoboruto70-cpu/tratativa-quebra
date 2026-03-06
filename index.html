@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<!-- saved from url=(0045)file:///C:/Users/willi/Downloads/flv-app.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2d7a3a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="FLV Controle">
+<title>FLV · Controle de Quebra</title>
+<link href="./index_files/css2" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#f4f7f4;--bg2:#ffffff;--bg3:#eaf2eb;
+  --green:#2d7a3a;--green2:#3a9648;--green3:#4db860;
+  --accent:#2d7a3a;--accent-light:#eaf2eb;
+  --yellow:#e8a020;--red:#d93025;
+  --white:#ffffff;--text:#1a2e1c;--text2:#3d5c42;
+  --muted:#7a9a80;--border:#d4e8d6;
+  --shadow:0 1px 4px rgba(45,122,58,0.10);
+  --shadow2:0 4px 20px rgba(45,122,58,0.13);
+  --font:'Inter',sans-serif;--mono:'Space Mono',monospace;
+}
+html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);}
+body{font-family:var(--font);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;}
+#app{display:flex;flex-direction:column;height:100svh;max-width:480px;margin:0 auto;overflow:hidden;background:var(--bg);}
+.header{background:var(--green);padding:14px 16px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0;box-shadow:0 2px 8px rgba(45,122,58,0.25);}
+.header-logo{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.header-title{font-size:19px;font-weight:800;color:#fff;line-height:1;}
+.header-sub{font-size:10px;color:rgba(255,255,255,0.75);letter-spacing:1px;text-transform:uppercase;margin-top:1px;}
+/* INSTALL BANNER */
+.install-bar{background:var(--yellow);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.install-bar span{flex:1;font-size:12px;font-weight:700;color:#fff;}
+.ib-btn{background:#fff;color:var(--yellow);border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer;flex-shrink:0;}
+.ib-x{background:transparent;color:rgba(255,255,255,0.9);border:none;font-size:22px;cursor:pointer;line-height:1;padding:0 4px;flex-shrink:0;}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 10px rgba(0,0,0,0.06);}
+.nav-btn{flex:1;padding:9px 4px 11px;background:none;border:none;cursor:pointer;color:var(--muted);font-family:var(--font);font-size:9px;letter-spacing:0.4px;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:3px;font-weight:600;}
+.nav-btn.active{color:var(--accent);}
+.nav-btn svg{width:22px;height:22px;stroke-width:1.8;}
+.main{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:72px;}
+.main::-webkit-scrollbar{width:3px;}
+.main::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.card{margin:10px 12px;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
+.card-head{padding:12px 14px 10px;border-bottom:1px solid var(--border);font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px;}
+.card-head svg{width:16px;height:16px;flex-shrink:0;}
+.card-body{padding:14px;}
+.sec-title{padding:14px 14px 6px;font-size:16px;font-weight:800;color:var(--text);display:flex;align-items:center;justify-content:space-between;}
+.field{margin-bottom:14px;}.field:last-child{margin-bottom:0;}
+.lbl{display:block;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.inp{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;-webkit-appearance:none;appearance:none;}
+.inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(45,122,58,0.10);background:#fff;}
+.inp::placeholder{color:var(--muted);}
+.inp[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.4) sepia(1) saturate(3) hue-rotate(100deg);}
+.inp[type=number]{font-family:var(--mono);font-size:15px;}
+.inp[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+/* AUTOCOMPLETE */
+.ac-wrap{position:relative;}
+.ac-list{position:absolute;top:100%;left:0;right:0;z-index:50;background:#fff;border:1.5px solid var(--accent);border-top:none;border-radius:0 0 10px 10px;max-height:200px;overflow-y:auto;box-shadow:var(--shadow2);}
+.ac-item{padding:11px 13px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;}
+.ac-item:active{background:var(--accent-light);}
+.ac-item:last-child{border-bottom:none;}
+.ac-code{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:700;min-width:56px;}
+.ac-name{font-size:13px;color:var(--text);}
+.prod-sel{display:flex;align-items:center;gap:6px;margin-top:6px;padding:8px 10px;background:var(--accent-light);border:1px solid var(--border);border-radius:8px;}
+.prod-sel svg{width:15px;height:15px;color:var(--accent);flex-shrink:0;}
+.prod-sel span{font-size:12px;color:var(--accent);font-weight:700;}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 16px;border:none;border-radius:10px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all 0.18s;}
+.btn:active{transform:scale(0.97);}
+.btn-p{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(45,122,58,0.28);}
+.btn-o{background:#fff;border:1.5px solid var(--border);color:var(--text2);}
+.btn-d{background:#fff2f2;border:1px solid #f5c5c5;color:var(--red);}
+.btn-g{background:transparent;border:none;color:var(--muted);}
+.btn-wa{background:#25D366;color:#fff;}
+.btn-f{width:100%;}
+.btn-s{padding:7px 11px;font-size:12px;}
+.btn svg{width:18px;height:18px;flex-shrink:0;}
+/* NF SCAN CARD */
+.nf-card{margin:0 12px 6px;background:linear-gradient(135deg,#eaf5ec,#f0faf2);border:1.5px solid var(--accent);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.nf-card:active{background:linear-gradient(135deg,#d8f0dc,#e8f7ea);}
+.nf-icon{width:44px;height:44px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nf-icon svg{width:24px;height:24px;color:#fff;}
+.nf-text .t1{font-size:14px;font-weight:800;color:var(--accent);}
+.nf-text .t2{font-size:11px;color:var(--muted);margin-top:2px;}
+/* BADGE */
+.bdg{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);}
+.bdg-g{background:#e6f5e9;color:var(--accent);}
+.bdg-r{background:#fdecea;color:var(--red);}
+.bdg-y{background:#fef3e2;color:var(--yellow);}
+/* METRICS */
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 12px 4px;}
+.metric{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:var(--shadow);}
+.m-lbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.m-val{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--accent);line-height:1;}
+.m-sub{font-size:10px;color:var(--muted);margin-top:4px;}
+/* ITEM TABS */
+.item-tabs{display:flex;gap:6px;padding:8px 12px 4px;overflow-x:auto;}
+.item-tabs::-webkit-scrollbar{display:none;}
+.itab{flex-shrink:0;padding:6px 16px;background:#fff;border:1.5px solid var(--border);border-radius:20px;cursor:pointer;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap;box-shadow:var(--shadow);}
+.itab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+/* QUEBRA */
+.qwrap{margin-top:12px;padding:12px;background:var(--bg);border-radius:10px;border:1px solid var(--border);}
+.qtop{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.qpct{font-family:var(--mono);font-size:22px;font-weight:700;}
+.qmeta{font-size:10px;color:var(--muted);font-weight:600;}
+.btrack{height:6px;background:#e0e0e0;border-radius:3px;overflow:hidden;}
+.bfill{height:100%;border-radius:3px;transition:width 0.5s;}
+.qnote{font-size:10px;color:var(--muted);margin-top:6px;font-style:italic;}
+/* PHOTOS */
+.psec{margin-bottom:16px;}.psec:last-child{margin-bottom:0;}
+.psec-head{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.pbtns{display:flex;gap:8px;margin-bottom:8px;}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.pthumb{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.pthumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.pdel{position:absolute;top:4px;right:4px;background:rgba(217,48,37,0.85);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:11px;cursor:pointer;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.ptyp{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.45);font-size:8px;font-weight:700;text-transform:uppercase;color:#fff;text-align:center;padding:3px;}
+input[type=file]{display:none;}
+/* WA BOX */
+.wa-box{background:var(--bg);border:2px solid var(--accent);border-radius:12px;padding:16px;font-family:var(--mono);font-size:13px;line-height:1.85;color:var(--text);white-space:pre-wrap;word-break:break-word;}
+/* HISTORY */
+.hcard{margin:8px 12px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:13px 14px;cursor:pointer;box-shadow:var(--shadow);}
+.hcard:active{border-color:var(--accent);}
+.hcard-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+.hdate{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:700;}
+.hprods{font-size:12px;color:var(--muted);line-height:1.5;}
+/* PRODUCT */
+.pcard{margin:8px 12px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);}
+.pcode{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;min-width:52px;}
+.pinfo{flex:1;min-width:0;}
+.pname{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pmeta{font-size:10px;color:var(--muted);margin-top:2px;}
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:flex;align-items:flex-end;justify-content:center;}
+.modal{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:92svh;overflow-y:auto;animation:slideUp 0.28s ease;box-shadow:0 -4px 30px rgba(0,0,0,0.15);}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.mhead{padding:16px 16px 12px;border-bottom:1px solid var(--border);font-size:15px;font-weight:800;color:var(--text);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1;}
+.mbody{padding:16px;}
+.mfoot{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;position:sticky;bottom:0;background:#fff;}
+/* INSTALL STEPS */
+.install-steps{padding:4px 0;}
+.istep{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.istep:last-child{border-bottom:none;}
+.istep-num{width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;margin-top:1px;}
+.istep-text .t1{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.istep-text .t2{font-size:12px;color:var(--muted);line-height:1.5;}
+.istep-text .tag{display:inline-block;background:var(--accent-light);color:var(--accent);border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700;font-family:var(--mono);}
+/* CHART */
+.chart-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.clbl{font-size:11px;color:var(--muted);width:88px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;}
+.ctrack{flex:1;height:20px;background:var(--bg3);border-radius:6px;overflow:hidden;}
+.cfill{height:100%;background:linear-gradient(90deg,var(--green2),var(--green3));border-radius:6px;transition:width 0.6s;}
+.cval{font-family:var(--mono);font-size:10px;color:var(--accent);width:52px;text-align:right;font-weight:700;}
+/* AI */
+.insight{background:var(--accent-light);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;font-size:13px;line-height:1.6;}
+.inum{font-family:var(--mono);color:var(--accent);font-size:11px;margin-right:6px;font-weight:700;}
+/* TOAST */
+.toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:999;opacity:0;transition:all 0.3s;white-space:nowrap;max-width:90vw;box-shadow:0 4px 16px rgba(0,0,0,0.2);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* LOADING */
+.loading{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:13px;padding:16px;font-weight:600;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spin{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+/* EMPTY */
+.empty{text-align:center;padding:50px 20px;color:var(--muted);}
+.empty-ico{font-size:44px;margin-bottom:12px;}
+.empty p{font-size:13px;line-height:1.9;font-weight:500;}
+/* MISC */
+.peribtns{display:flex;gap:6px;padding:4px 12px 12px;overflow-x:auto;}
+.peribtns::-webkit-scrollbar{display:none;}
+.srch{padding:6px 12px 10px;}
+.dphotos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.dphoto{aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid var(--border);position:relative;}
+.dphoto img{width:100%;height:100%;object-fit:cover;}
+.btn-wa-big{background:#25D366;color:#fff;padding:15px;font-size:15px;font-weight:800;width:100%;border-radius:12px;border:none;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 4px 20px rgba(37,211,102,0.30);}
+.btn-wa-big:active{transform:scale(0.98);}
+.btn-wa-big svg{width:22px;height:22px;}
+.mt8{margin-top:8px;}.mt12{margin-top:12px;}
+.flex{display:flex;}.gap8{gap:8px;}.ic{align-items:center;}.f1{flex:1;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.fu{animation:fadeUp 0.22s ease;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <div class="header-logo">🥦</div>
+    <div style="flex:1">
+      <div class="header-title">FLV Controle</div>
+      <div class="header-sub">Quebra de Hortifruti</div>
+    </div>
+    <div id="hdate" style="font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.75);text-align:right;">05/03/2026</div>
+  </div>
+  <div id="install-bar" style="display:none" class="install-bar">
+    <span>📲 Instalar app no celular</span>
+    <button class="ib-btn" onclick="doInstall()">Instalar</button>
+    <button class="ib-x" onclick="hideInstall()">×</button>
+  </div>
+  <div class="main" id="main"><div class="fu">
+    <div style="padding:16px 14px 6px">
+      <div style="font-size:22px;font-weight:800;color:var(--text)">Controle FLV</div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:3px">05/03/2026 · 0 tratativa(s) hoje</div>
+    </div>
+    <div class="metrics">
+      <div class="metric"><div class="m-lbl">Quebra Hoje</div><div class="m-val">0.0</div><div class="m-sub">kg perdidos</div></div>
+      <div class="metric"><div class="m-lbl">% Quebra</div><div class="m-val" style="color:var(--accent)">0.0%</div><div class="m-sub">meta: 5%</div></div>
+      <div class="metric"><div class="m-lbl">Tratativas</div><div class="m-val">0</div><div class="m-sub">total</div></div>
+      <div class="metric"><div class="m-lbl">Produtos</div><div class="m-val">0</div><div class="m-sub">cadastrados</div></div>
+    </div>
+    <div class="card" style="margin-top:4px">
+    <div class="card-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg> Instalar como App</div>
+    <div class="card-body" style="padding:12px 14px">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">Para instalar sem depender do link, hospede o arquivo e acesse pelo Chrome:</p>
+      <button class="btn btn-p btn-f btn-s" onclick="S.showInstallModal=true;rerender()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Ver Passo a Passo</button>
+    </div>
+  </div>
+    <div class="sec-title" style="margin-top:4px"><span>Recentes</span></div>
+    <div class="empty"><div class="empty-ico">📋</div><p>Nenhuma tratativa ainda.<br>Toque em "Nova" para registrar.</p></div>
+    <div style="padding:10px 12px 16px"><button class="btn btn-p btn-f" style="padding:15px;font-size:15px" onclick="go(&#39;nova&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg> Nova Tratativa</button></div>
+    
+  </div></div>
+  <nav class="bottom-nav" id="nav"><button class="nav-btn active" onclick="go(&#39;home&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Início</span></button><button class="nav-btn" onclick="go(&#39;produtos&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path></svg><span>Produtos</span></button><button class="nav-btn" onclick="go(&#39;nova&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg><span>Nova</span></button><button class="nav-btn" onclick="go(&#39;dashboard&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span>Dash</span></button><button class="nav-btn" onclick="go(&#39;historico&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg><span>Histórico</span></button></nav>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const DB={
+  get:(k,d=[])=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}},
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+};
+const genId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const todayISO=()=>new Date().toISOString().split('T')[0];
+const fmtDate=d=>{const dt=d?new Date(d+'T12:00:00'):new Date();return`${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`;};
+const fmtKg=n=>String(parseFloat(n)||0).replace('.',',');
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ── PWA INSTALL ───────────────────────────────────────────────────────────────
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('install-bar').style.display='flex';});
+window.addEventListener('appinstalled',()=>{$('install-bar').style.display='none';deferredPrompt=null;toast('✓ App instalado!');});
+window.doInstall=async function(){if(!deferredPrompt)return;deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;if(outcome==='accepted'){$('install-bar').style.display='none';deferredPrompt=null;}};
+window.hideInstall=function(){$('install-bar').style.display='none';};
+
+// ── ICONS ─────────────────────────────────────────────────────────────────────
+const I={
+  home:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  box:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>`,
+  plus:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`,
+  chart:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+  list:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`,
+  cam:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>`,
+  img:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
+  chk:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`,
+  x:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  trash:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>`,
+  edit:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+  wa:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`,
+  copy:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`,
+  back:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 18 9 12 15 6"/></svg>`,
+  brain:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><ellipse cx="12" cy="12" rx="10" ry="8"/><path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`,
+  share:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
+  scan:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>`,
+  dl:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
+  phone:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+const S={
+  tab:'home',
+  produtos:DB.get('flv-produtos',[]),
+  tratativas:DB.get('flv-tratativas',[]),
+  novaItems:[],novaIdx:0,novaStep:'form',
+  acQ:[''],acOpen:[false],
+  insights:[],aiLoading:false,
+  periodo:'mes',
+  histDetail:null,
+  pModal:null,pForm:{codigo:'',nome:'',precoKg:'',metaQuebra:'5'},pEditId:null,
+  scanImg:null,scanLoading:false,
+  prodSearch:'',histSearch:'',
+  showInstallModal:false,
+};
+const save=()=>{DB.set('flv-produtos',S.produtos);DB.set('flv-tratativas',S.tratativas);};
+let tTimer;
+const toast=msg=>{const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tTimer);tTimer=setTimeout(()=>t.classList.remove('show'),2800);};
+const emptyItem=()=>({id:genId(),produtoId:null,dataRegistro:todayISO(),chegou:'',quebra:'',fotos:{produto:[],balanca:[],etiqueta:[]}});
+function initNova(){if(!S.novaItems.length){S.novaItems=[emptyItem()];S.novaIdx=0;S.novaStep='form';S.acQ=[''];S.acOpen=[false];}}
+initNova();
+const genWA=items=>items.map(it=>{const p=S.produtos.find(p=>p.id===it.produtoId);if(!p)return'';return`Cód: ${p.codigo}\n${p.nome}\n${fmtDate(it.dataRegistro)}\n chegou: ${fmtKg(it.chegou)} kg\nQuantidade da quebra: ${fmtKg(it.quebra)} kg`;}).filter(Boolean).join('\n\n');
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function render(){$('main').innerHTML=page();$('nav').innerHTML=nav();$('hdate').textContent=fmtDate();after();}
+function rerender(){$('main').innerHTML=page();after();}
+function after(){document.querySelectorAll('input[type=number]').forEach(el=>el.addEventListener('wheel',e=>e.preventDefault(),{passive:false}));}
+function nav(){
+  return[['home','Início',I.home],['produtos','Produtos',I.box],['nova','Nova',I.plus],['dashboard','Dash',I.chart],['historico','Histórico',I.list]]
+    .map(([id,lbl,ic])=>`<button class="nav-btn${S.tab===id?' active':''}" onclick="go('${id}')">${ic}<span>${lbl}</span></button>`).join('');
+}
+window.go=function(t){S.tab=t;render();};
+function page(){
+  if(S.tab==='home')return homeP();
+  if(S.tab==='produtos')return prodP();
+  if(S.tab==='nova')return novaP();
+  if(S.tab==='dashboard')return dashP();
+  if(S.tab==='historico')return histP();
+  return'';
+}
+
+// ── HOME ──────────────────────────────────────────────────────────────────────
+function homeP(){
+  const td=todayISO();
+  const tt=S.tratativas.filter(t=>t.createdAt.startsWith(td));
+  const tq=tt.reduce((s,t)=>s+t.items.reduce((a,i)=>a+(parseFloat(i.quebra)||0),0),0);
+  const tc=tt.reduce((s,t)=>s+t.items.reduce((a,i)=>a+(parseFloat(i.chegou)||0),0),0);
+  const pct=tc>0?((tq/tc)*100).toFixed(1):'0.0';
+  const rec=S.tratativas.slice(0,5).map(t=>{
+    const tqb=t.items.reduce((s,i)=>s+(parseFloat(i.quebra)||0),0);
+    const nm=t.items.map(i=>{const p=S.produtos.find(p=>p.id===i.produtoId);return p?esc(p.nome):'?';}).join(', ');
+    return`<div class="hcard fu" onclick="openDet('${t.id}')"><div class="hcard-top"><span class="hdate">${fmtDate(t.createdAt)}</span><span class="bdg bdg-g">${t.items.length} item(ns)</span><span class="bdg bdg-r">${tqb.toFixed(1)} kg quebra</span></div><div class="hprods">${nm}</div></div>`;
+  }).join('');
+
+  // install guide card
+  const instCard=`<div class="card" style="margin-top:4px">
+    <div class="card-head">${I.phone} Instalar como App</div>
+    <div class="card-body" style="padding:12px 14px">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">Para instalar sem depender do link, hospede o arquivo e acesse pelo Chrome:</p>
+      <button class="btn btn-p btn-f btn-s" onclick="S.showInstallModal=true;rerender()">${I.dl} Ver Passo a Passo</button>
+    </div>
+  </div>`;
+
+  const installModal = S.showInstallModal ? `<div class="modal-bg" onclick="S.showInstallModal=false;rerender()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="mhead"><span>📲 Como Instalar o App</span><button class="btn btn-g btn-s" onclick="S.showInstallModal=false;rerender()">${I.x}</button></div>
+      <div class="mbody">
+        <div style="background:var(--accent-light);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.6;">
+          O app precisa estar hospedado em HTTPS para o botão de instalação aparecer. Use o <strong>Netlify</strong> — é grátis e leva menos de 2 minutos.
+        </div>
+        <div class="install-steps">
+          <div class="istep">
+            <div class="istep-num">1</div>
+            <div class="istep-text">
+              <div class="t1">Acesse netlify.com</div>
+              <div class="t2">No celular ou computador. Crie uma conta grátis (pode usar o Google).</div>
+            </div>
+          </div>
+          <div class="istep">
+            <div class="istep-num">2</div>
+            <div class="istep-text">
+              <div class="t1">Faça upload do arquivo</div>
+              <div class="t2">Na tela inicial do Netlify, arraste o arquivo <span class="tag">flv-app.html</span> para a área indicada. Em segundos você recebe um link <span class="tag">https://...netlify.app</span></div>
+            </div>
+          </div>
+          <div class="istep">
+            <div class="istep-num">3</div>
+            <div class="istep-text">
+              <div class="t1">Abra o link no Chrome</div>
+              <div class="t2">No celular, abra o link recebido no Chrome. Um banner <strong>"Instalar app"</strong> aparecerá automaticamente no topo.</div>
+            </div>
+          </div>
+          <div class="istep">
+            <div class="istep-num">4</div>
+            <div class="istep-text">
+              <div class="t1">Toque em "Instalar"</div>
+              <div class="t2">O app vai para a tela inicial como um app nativo — sem precisar abrir o navegador!</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#fff3e0;border-radius:10px;padding:10px 12px;margin-top:8px;font-size:12px;color:#8a5000;">
+          💡 <strong>Dica:</strong> Você também pode ir em <strong>Menu (⋮) → Adicionar à tela inicial</strong> no Chrome mesmo sem o Netlify — só não terá o banner automático.
+        </div>
+      </div>
+      <div class="mfoot">
+        <button class="btn btn-p btn-f" onclick="window.open('https://netlify.com','_blank')">Abrir Netlify.com</button>
+      </div>
+    </div>
+  </div>` : '';
+
+  return`<div class="fu">
+    <div style="padding:16px 14px 6px">
+      <div style="font-size:22px;font-weight:800;color:var(--text)">Controle FLV</div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:3px">${fmtDate()} · ${tt.length} tratativa(s) hoje</div>
+    </div>
+    <div class="metrics">
+      <div class="metric"><div class="m-lbl">Quebra Hoje</div><div class="m-val">${tq.toFixed(1)}</div><div class="m-sub">kg perdidos</div></div>
+      <div class="metric"><div class="m-lbl">% Quebra</div><div class="m-val" style="color:${parseFloat(pct)>5?'var(--red)':'var(--accent)'}">${pct}%</div><div class="m-sub">meta: 5%</div></div>
+      <div class="metric"><div class="m-lbl">Tratativas</div><div class="m-val">${S.tratativas.length}</div><div class="m-sub">total</div></div>
+      <div class="metric"><div class="m-lbl">Produtos</div><div class="m-val">${S.produtos.filter(p=>p.ativo).length}</div><div class="m-sub">cadastrados</div></div>
+    </div>
+    ${instCard}
+    <div class="sec-title" style="margin-top:4px"><span>Recentes</span></div>
+    ${S.tratativas.length===0?`<div class="empty"><div class="empty-ico">📋</div><p>Nenhuma tratativa ainda.<br>Toque em "Nova" para registrar.</p></div>`:rec}
+    <div style="padding:10px 12px 16px"><button class="btn btn-p btn-f" style="padding:15px;font-size:15px" onclick="go('nova')">${I.plus} Nova Tratativa</button></div>
+    ${installModal}
+  </div>`;
+}
+window.openDet=function(id){S.histDetail=S.tratativas.find(t=>t.id===id);S.tab='historico';render();};
+
+// ── PRODUTOS ──────────────────────────────────────────────────────────────────
+function prodP(){
+  const q=S.prodSearch||'';
+  const list=S.produtos.filter(p=>p.ativo&&(p.nome.toLowerCase().includes(q.toLowerCase())||p.codigo.toLowerCase().includes(q.toLowerCase())));
+  return`<div class="fu">
+    <div class="sec-title"><span>Produtos</span><button class="btn btn-p btn-s" onclick="newP()">${I.plus} Novo</button></div>
+
+    <!-- NF SCAN CARD - destaque -->
+    <div class="nf-card fu" onclick="openScan()">
+      <div class="nf-icon">${I.scan}</div>
+      <div class="nf-text">
+        <div class="t1">Cadastrar via Nota Fiscal</div>
+        <div class="t2">Tire foto da nota — a IA extrai código e nome automaticamente</div>
+      </div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:18px;height:18px;color:var(--accent);flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+
+    <div class="srch"><input class="inp" placeholder="Buscar por nome ou código..." value="${esc(q)}" oninput="S.prodSearch=this.value;rerender()"/></div>
+    ${list.length===0?`<div class="empty"><div class="empty-ico">📦</div><p>${q?'Nenhum produto encontrado.':'Cadastre seu primeiro produto.'}</p></div>`:''}
+    ${list.map(p=>`<div class="pcard fu">
+      <span class="pcode">${esc(p.codigo)}</span>
+      <div class="pinfo"><div class="pname">${esc(p.nome)}</div><div class="pmeta">${p.precoKg?`R$ ${p.precoKg}/kg · `:''}Meta: ${p.metaQuebra||5}% quebra</div></div>
+      <div class="flex gap8"><button class="btn btn-g btn-s" onclick="editP('${p.id}')">${I.edit}</button><button class="btn btn-g btn-s" style="color:var(--red)" onclick="delP('${p.id}')">${I.trash}</button></div>
+    </div>`).join('')}
+    ${pModalH()}
+    <input type="file" id="scan-file" accept="image/*">
+  </div>`;
+}
+
+function pModalH(){
+  if(!S.pModal)return'';
+  if(S.pModal==='scan')return`<div class="modal-bg" onclick="closeP()"><div class="modal" onclick="event.stopPropagation()">
+    <div class="mhead"><span>📷 Analisar Nota Fiscal</span><button class="btn btn-g btn-s" onclick="closeP()">${I.x}</button></div>
+    <div class="mbody">
+      ${S.scanImg?`<img src="${S.scanImg}" style="width:100%;border-radius:10px;border:1px solid var(--border);margin-bottom:12px"/>`:'<div style="text-align:center;padding:20px;color:var(--muted)">Carregando foto...</div>'}
+      ${S.scanLoading?`<div class="loading"><div class="spin"></div> Extraindo dados com IA...</div>`:`<button class="btn btn-p btn-f" onclick="analyzeNF()">${I.scan} Extrair Dados com IA</button>`}
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5">A IA vai identificar o código e nome do produto na foto</p>
+    </div>
+  </div></div>`;
+  const f=S.pForm;
+  return`<div class="modal-bg" onclick="closeP()"><div class="modal" onclick="event.stopPropagation()">
+    <div class="mhead"><span>${S.pEditId?'Editar Produto':'Novo Produto'}</span><button class="btn btn-g btn-s" onclick="closeP()">${I.x}</button></div>
+    <div class="mbody">
+      <div class="field"><label class="lbl">Código *</label><input class="inp" id="pm-c" value="${esc(f.codigo)}" placeholder="ex: 7028" maxlength="20" style="font-family:var(--mono)"/></div>
+      <div class="field"><label class="lbl">Nome do Produto *</label><input class="inp" id="pm-n" value="${esc(f.nome)}" placeholder="ex: Tomate Longa Vida" maxlength="200"/></div>
+      <div class="row2">
+        <div class="field"><label class="lbl">Preço/kg (R$)</label><input class="inp" id="pm-p" type="number" step="0.01" value="${f.precoKg}" placeholder="0,00"/></div>
+        <div class="field"><label class="lbl">Meta Quebra (%)</label><input class="inp" id="pm-m" type="number" step="0.1" max="100" value="${f.metaQuebra}" placeholder="5"/></div>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn btn-o f1" onclick="closeP()">Cancelar</button><button class="btn btn-p" style="flex:2" onclick="saveP()">${I.chk} Salvar</button></div>
+  </div></div>`;
+}
+
+window.newP=function(){S.pForm={codigo:'',nome:'',precoKg:'',metaQuebra:'5'};S.pEditId=null;S.pModal='new';rerender();};
+window.editP=function(id){const p=S.produtos.find(p=>p.id===id);if(!p)return;S.pForm={codigo:p.codigo,nome:p.nome,precoKg:p.precoKg||'',metaQuebra:p.metaQuebra||'5'};S.pEditId=id;S.pModal='edit';rerender();};
+window.closeP=function(){S.pModal=null;S.scanImg=null;rerender();};
+window.delP=function(id){S.produtos=S.produtos.map(p=>p.id===id?{...p,ativo:false}:p);save();toast('✓ Produto desativado');rerender();};
+window.saveP=function(){
+  const c=$('pm-c')?.value.trim(),n=$('pm-n')?.value.trim(),pr=$('pm-p')?.value,m=$('pm-m')?.value;
+  if(!c||!n){toast('⚠ Código e nome obrigatórios');return;}
+  if(S.produtos.find(p=>p.codigo===c&&p.ativo&&p.id!==S.pEditId)){toast('⚠ Código já existe');return;}
+  if(S.pEditId){S.produtos=S.produtos.map(p=>p.id===S.pEditId?{...p,codigo:c,nome:n,precoKg:pr,metaQuebra:m}:p);toast('✓ Produto atualizado');}
+  else{S.produtos.push({id:genId(),codigo:c,nome:n,precoKg:pr,metaQuebra:m,ativo:true,createdAt:new Date().toISOString()});toast('✓ Produto cadastrado');}
+  save();S.pModal=null;rerender();
+};
+window.openScan=function(){
+  S.pModal='scan';rerender();
+  setTimeout(()=>{
+    const f=$('scan-file');
+    if(f){
+      f.onchange=e=>{
+        const file=e.target.files[0];if(!file)return;
+        const r=new FileReader();
+        r.onload=ev=>{S.scanImg=ev.target.result;rerender();};
+        r.readAsDataURL(file);
+      };
+      f.click();
+    }
+  },50);
+};
+window.analyzeNF=async function(){
+  if(!S.scanImg)return;S.scanLoading=true;rerender();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:S.scanImg.split(',')[1]}},{type:'text',text:'Analise esta nota fiscal ou etiqueta de produto hortifruti. Extraia o primeiro produto identificado. Retorne APENAS JSON puro sem markdown: {"codigo":"...","nome":"..."}'}]}]})});
+    const data=await res.json();
+    const txt=data.content?.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(txt);
+    S.pForm={codigo:parsed.codigo||'',nome:parsed.nome||'',precoKg:'',metaQuebra:'5'};
+    S.pEditId=null;S.scanImg=null;S.pModal='new';toast('✓ Dados extraídos da nota!');
+  }catch{toast('⚠ Não foi possível extrair. Verifique a foto.');S.pModal='new';S.scanImg=null;}
+  S.scanLoading=false;rerender();
+};
+
+// ── NOVA TRATATIVA ────────────────────────────────────────────────────────────
+function novaP(){
+  if(S.novaStep==='preview')return prevP();
+  const idx=S.novaIdx,it=S.novaItems[idx];if(!it)return'';
+  const prod=it.produtoId?S.produtos.find(p=>p.id===it.produtoId):null;
+  const meta=prod?(parseFloat(prod.metaQuebra)||5):5;
+  const ch=parseFloat(it.chegou)||0,qb=parseFloat(it.quebra)||0;
+  const pct=ch>0?(qb/ch*100):0,over=pct>meta;
+  const tabs=S.novaItems.map((item,i)=>{const p=S.produtos.find(p=>p.id===item.produtoId);return`<div class="itab${i===idx?' active':''}" onclick="setIdx(${i})">${p?esc(p.codigo):`Item ${i+1}`}</div>`;}).join('');
+  const acQ=S.acQ[idx]||'';
+  const sugs=acQ.length>=2?S.produtos.filter(p=>p.ativo&&(p.codigo.toLowerCase().includes(acQ.toLowerCase())||p.nome.toLowerCase().includes(acQ.toLowerCase()))).slice(0,8):[];
+  const acList=S.acOpen[idx]&&sugs.length>0?`<div class="ac-list">${sugs.map(p=>`<div class="ac-item" onmousedown="selP(${idx},'${p.id}')"><span class="ac-code">${esc(p.codigo)}</span><span class="ac-name">${esc(p.nome)}</span></div>`).join('')}</div>`:'';
+  const photoSecs=['produto','balanca','etiqueta'].map(tipo=>{
+    const labels={produto:'Foto do Produto',balanca:'Foto da Balança',etiqueta:'Foto da Etiqueta'};
+    const multi=tipo!=='etiqueta',fotos=it.fotos[tipo];
+    return`<div class="psec">
+      <div class="psec-head">${labels[tipo]}<span class="bdg bdg-g">${fotos.length} foto(s)</span>${!multi?'<span style="font-size:9px;margin-left:2px;color:var(--muted)">máx 1</span>':''}</div>
+      <div class="pbtns">
+        <button class="btn btn-o btn-s" onclick="trigPh(${idx},'${tipo}','c')">${I.cam} Câmera</button>
+        <button class="btn btn-o btn-s" onclick="trigPh(${idx},'${tipo}','g')">${I.img} Galeria</button>
+      </div>
+      ${fotos.length>0?`<div class="pgrid">${fotos.map((src,pi)=>`<div class="pthumb"><img src="${src}"/><button class="pdel" onclick="rmPhoto(${idx},'${tipo}',${pi})">✕</button><div class="ptyp">${tipo}</div></div>`).join('')}</div>`:''}
+      <input type="file" id="ph-${idx}-${tipo}-c" accept="image/*" capture="environment">
+      <input type="file" id="ph-${idx}-${tipo}-g" accept="image/*"${multi?' multiple':''}>
+    </div>`;
+  }).join('');
+  return`<div class="fu">
+    <div class="sec-title"><span>Nova Tratativa</span><button class="btn btn-o btn-s" onclick="addItm()">${I.plus} Item</button></div>
+    <div class="item-tabs">${tabs}</div>
+    <div class="card">
+      <div class="card-head">${I.box} Produto</div>
+      <div class="card-body">
+        <div class="field"><label class="lbl">Código / Nome</label>
+          <div class="ac-wrap"><input class="inp" id="aci" value="${esc(acQ)}" placeholder="Digite 2+ caracteres para buscar..." autocomplete="off" oninput="onAcI(${idx},this.value)" onblur="setTimeout(()=>{S.acOpen[${idx}]=false;rerender()},200)"/>${acList}</div>
+          ${prod?`<div class="prod-sel">${I.chk}<span>${esc(prod.nome)}</span></div>`:''}
+        </div>
+        <div class="field"><label class="lbl">Data do Registro</label><input class="inp" type="date" value="${it.dataRegistro}" max="${todayISO()}" onchange="updI(${idx},'dataRegistro',this.value)"/></div>
+        <div class="row2">
+          <div class="field"><label class="lbl">Chegou (kg)</label><input class="inp" type="number" step="0.1" min="0" value="${it.chegou}" placeholder="0" oninput="updI(${idx},'chegou',this.value)"/></div>
+          <div class="field"><label class="lbl">Quebra (kg)</label><input class="inp" type="number" step="0.1" min="0" value="${it.quebra}" placeholder="0" oninput="updI(${idx},'quebra',this.value)"/></div>
+        </div>
+        ${ch>0&&it.quebra!==''?`<div class="qwrap"><div class="qtop"><div class="qpct" style="color:${over?'var(--red)':'var(--accent)'}">${pct.toFixed(1)}%</div><div class="qmeta">meta: ${meta}%</div></div><div class="btrack"><div class="bfill" style="width:${Math.min(pct,100).toFixed(1)}%;background:${over?'var(--red)':'linear-gradient(90deg,var(--green2),var(--green3))'}"></div></div><div class="qnote">${over?'⚠ Acima da meta — ':''}Percentual interno, não enviado ao WhatsApp</div></div>`:''}
+      </div>
+    </div>
+    <div class="card"><div class="card-head">${I.cam} Fotos</div><div class="card-body">${photoSecs}</div></div>
+    ${S.novaItems.length>1?`<div style="padding:0 12px 8px"><button class="btn btn-d btn-f btn-s" onclick="rmItm(${idx})">${I.trash} Remover este item</button></div>`:''}
+    <div style="padding:8px 12px 16px"><button class="btn btn-p btn-f" style="padding:15px;font-size:15px" onclick="goPreview()">${I.share} Gerar Texto e Preview</button></div>
+  </div>`;
+}
+
+function prevP(){
+  const waT=genWA(S.novaItems);
+  const allPh=S.novaItems.flatMap(it=>[...it.fotos.produto.map(f=>({src:f,t:'Produto'})),...it.fotos.balanca.map(f=>({src:f,t:'Balança'})),...it.fotos.etiqueta.map(f=>({src:f,t:'Etiqueta'}))]);
+  return`<div class="fu">
+    <div class="sec-title"><button class="btn btn-g btn-s" onclick="S.novaStep='form';rerender()">${I.back}</button><span style="flex:1;margin-left:6px">Preview da Mensagem</span></div>
+    <div class="card"><div class="card-head">${I.wa} Texto para WhatsApp</div><div class="card-body">
+      <div class="wa-box">${esc(waT)}</div>
+      <button class="btn btn-o btn-f mt8" onclick="cpTxt()">${I.copy} Copiar Texto</button>
+    </div></div>
+    ${allPh.length>0?`<div class="card"><div class="card-head">${I.img} Fotos (${allPh.length})</div><div class="card-body"><div class="dphotos">${allPh.map(f=>`<div class="dphoto"><img src="${f.src}"/><div class="ptyp">${f.t}</div></div>`).join('')}</div></div></div>`:''}
+    <div style="padding:8px 12px 16px"><button class="btn-wa-big" onclick="sendWA()">${I.wa} Enviar para WhatsApp</button></div>
+  </div>`;
+}
+
+window.setIdx=function(i){S.novaIdx=i;rerender();};
+window.addItm=function(){S.novaItems.push(emptyItem());S.acQ.push('');S.acOpen.push(false);S.novaIdx=S.novaItems.length-1;rerender();};
+window.rmItm=function(i){if(S.novaItems.length<=1)return;S.novaItems.splice(i,1);S.acQ.splice(i,1);S.acOpen.splice(i,1);S.novaIdx=Math.max(0,i-1);rerender();};
+window.updI=function(i,f,v){S.novaItems[i][f]=v;rerender();};
+window.onAcI=function(i,v){S.acQ[i]=v;S.acOpen[i]=true;if(!v)S.novaItems[i].produtoId=null;rerender();setTimeout(()=>{const el=$('aci');if(el){el.focus();const l=el.value.length;el.setSelectionRange(l,l);}},0);};
+window.selP=function(i,id){const p=S.produtos.find(p=>p.id===id);if(!p)return;S.novaItems[i].produtoId=id;S.acQ[i]=p.codigo+' · '+p.nome;S.acOpen[i]=false;rerender();};
+window.trigPh=function(idx,tipo,src){
+  const el=document.getElementById(`ph-${idx}-${tipo}-${src}`);if(!el)return;
+  el.onchange=e=>{
+    const files=Array.from(e.target.files);
+    if(tipo==='etiqueta'&&S.novaItems[idx].fotos.etiqueta.length>=1){toast('⚠ Etiqueta: apenas 1 foto');return;}
+    files.forEach(f=>{if(tipo==='etiqueta'&&S.novaItems[idx].fotos.etiqueta.length>=1)return;const r=new FileReader();r.onload=ev=>{S.novaItems[idx].fotos[tipo].push(ev.target.result);rerender();};r.readAsDataURL(f);});
+    e.target.value='';
+  };el.click();
+};
+window.rmPhoto=function(i,t,pi){S.novaItems[i].fotos[t].splice(pi,1);rerender();};
+window.goPreview=function(){
+  for(const it of S.novaItems){if(!it.produtoId){toast('⚠ Selecione um produto em todos os itens');return;}if(!it.chegou||parseFloat(it.chegou)<=0){toast('⚠ Informe a quantidade que chegou');return;}if(it.quebra===''||parseFloat(it.quebra)<0){toast('⚠ Informe a quebra (pode ser 0)');return;}}
+  S.novaStep='preview';rerender();
+};
+window.cpTxt=function(){const t=genWA(S.novaItems);if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>toast('✓ Texto copiado!'));};
+window.sendWA=async function(){
+  const waT=genWA(S.novaItems);
+  const allPh=S.novaItems.flatMap(it=>[...it.fotos.produto,...it.fotos.balanca,...it.fotos.etiqueta]);
+  if(navigator.share&&allPh.length>0){try{const files=await Promise.all(allPh.map(async(f,i)=>{const res=await fetch(f);const b=await res.blob();return new File([b],`foto_${i+1}.jpg`,{type:'image/jpeg'});}));await navigator.share({text:waT,files});finaliza();return;}catch(e){}}
+  window.open('https://wa.me/?text='+encodeURIComponent(waT),'_blank');
+  if(allPh.length>0)toast(`📸 Adicione ${allPh.length} foto(s) manualmente no WhatsApp`);
+  finaliza();
+};
+function finaliza(){
+  S.tratativas.unshift({id:genId(),createdAt:new Date().toISOString(),items:S.novaItems,textoWhatsapp:genWA(S.novaItems)});
+  save();toast('✓ Tratativa salva!');
+  S.novaItems=[emptyItem()];S.novaIdx=0;S.novaStep='form';S.acQ=[''];S.acOpen=[false];
+  S.tab='historico';S.histDetail=null;render();
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+function dashP(){
+  const now=new Date();
+  const tt=S.tratativas.filter(t=>{const d=new Date(t.createdAt);if(S.periodo==='hoje')return d.toDateString()===now.toDateString();if(S.periodo==='semana')return(now-d)/86400000<=7;if(S.periodo==='mes')return(now-d)/86400000<=30;return true;});
+  const ai=tt.flatMap(t=>t.items);
+  const tc=ai.reduce((s,i)=>s+(parseFloat(i.chegou)||0),0),tq=ai.reduce((s,i)=>s+(parseFloat(i.quebra)||0),0);
+  const pct=tc>0?((tq/tc)*100).toFixed(1):'0.0';
+  const bp={};ai.forEach(i=>{const p=S.produtos.find(p=>p.id===i.produtoId);if(!p)return;bp[p.nome]=(bp[p.nome]||0)+(parseFloat(i.quebra)||0);});
+  const top=Object.entries(bp).sort((a,b)=>b[1]-a[1]).slice(0,8),mx=top[0]?.[1]||1;
+  const insH=S.aiLoading?`<div class="loading"><div class="spin"></div> Analisando padrões...</div>`:S.insights.length>0?`${S.insights.map((ins,i)=>`<div class="insight"><span class="inum">#${i+1}</span>${esc(ins)}</div>`).join('')}<button class="btn btn-o btn-f btn-s mt8" onclick="doAI()">Reanalisar</button>`:`<button class="btn btn-p btn-f" onclick="doAI()">${I.brain} Analisar Padrões com IA</button>`;
+  return`<div class="fu">
+    <div class="sec-title"><span>Dashboard</span></div>
+    <div class="peribtns">${[['hoje','Hoje'],['semana','7 dias'],['mes','30 dias'],['tudo','Tudo']].map(([v,l])=>`<button class="btn btn-s ${S.periodo===v?'btn-p':'btn-o'}" onclick="setPer('${v}')">${l}</button>`).join('')}</div>
+    <div class="metrics">
+      <div class="metric"><div class="m-lbl">Tratativas</div><div class="m-val">${tt.length}</div></div>
+      <div class="metric"><div class="m-lbl">Total Quebra</div><div class="m-val">${tq.toFixed(1)}</div><div class="m-sub">kg</div></div>
+      <div class="metric"><div class="m-lbl">% Quebra</div><div class="m-val" style="color:${parseFloat(pct)>5?'var(--red)':'var(--accent)'}">${pct}%</div></div>
+      <div class="metric"><div class="m-lbl">Chegou</div><div class="m-val">${tc.toFixed(0)}</div><div class="m-sub">kg total</div></div>
+    </div>
+    ${top.length>0?`<div class="card" style="margin-top:4px"><div class="card-head">${I.chart} Top Quebra por Produto</div><div class="card-body" style="padding:12px 8px">${top.map(([n,k])=>`<div class="chart-row"><div class="clbl">${esc(n)}</div><div class="ctrack"><div class="cfill" style="width:${(k/mx*100).toFixed(1)}%"></div></div><div class="cval">${k.toFixed(1)} kg</div></div>`).join('')}</div></div>`:''}
+    <div class="card"><div class="card-head">${I.brain} Análise com IA</div><div class="card-body">${insH}</div></div>
+  </div>`;
+}
+window.setPer=function(v){S.periodo=v;rerender();};
+window.doAI=async function(){
+  if(!S.tratativas.length){toast('⚠ Sem dados para analisar');return;}
+  S.aiLoading=true;rerender();
+  try{
+    const sum=S.tratativas.slice(0,30).map(t=>({data:t.createdAt,items:t.items.map(i=>{const p=S.produtos.find(p=>p.id===i.produtoId);return{produto:p?.nome||'?',chegou:i.chegou,quebra:i.quebra};})}));
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:`Analise dados de quebra de hortifruti. Retorne APENAS JSON puro sem markdown: {"insights":["...","...","...","...","..."]} — insights práticos em português.\n\nDados: ${JSON.stringify(sum)}`}]})});
+    const data=await res.json();
+    const txt=data.content?.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim();
+    S.insights=JSON.parse(txt).insights||[];
+  }catch{toast('⚠ Erro ao analisar. Tente novamente.');}
+  S.aiLoading=false;rerender();
+};
+
+// ── HISTÓRICO ─────────────────────────────────────────────────────────────────
+function histP(){
+  if(S.histDetail)return detP(S.histDetail);
+  const q=S.histSearch||'';
+  const list=S.tratativas.filter(t=>!q||t.items.some(i=>{const p=S.produtos.find(p=>p.id===i.produtoId);return p&&(p.nome.toLowerCase().includes(q.toLowerCase())||p.codigo.toLowerCase().includes(q.toLowerCase()));}));
+  return`<div class="fu">
+    <div class="sec-title"><span>Histórico</span></div>
+    <div class="srch"><input class="inp" placeholder="Buscar por produto ou código..." value="${esc(q)}" oninput="S.histSearch=this.value;rerender()"/></div>
+    ${list.length===0?`<div class="empty"><div class="empty-ico">📋</div><p>${q?'Nenhuma tratativa encontrada.':'Nenhuma tratativa salva ainda.'}</p></div>`:''}
+    ${list.map(t=>{const tq=t.items.reduce((s,i)=>s+(parseFloat(i.quebra)||0),0);const nm=t.items.map(i=>{const p=S.produtos.find(p=>p.id===i.produtoId);return p?esc(p.nome):'?';}).join(', ');return`<div class="hcard fu" onclick="S.histDetail=S.tratativas.find(t=>t.id==='${t.id}');rerender()"><div class="hcard-top"><span class="hdate">${fmtDate(t.createdAt)}</span><span class="bdg bdg-g">${t.items.length} item(ns)</span><span class="bdg bdg-r">${tq.toFixed(1)} kg</span></div><div class="hprods">${nm}</div></div>`;}).join('')}
+  </div>`;
+}
+function detP(t){
+  const allPh=t.items.flatMap(it=>[...it.fotos.produto.map(f=>({src:f,tp:'Produto'})),...it.fotos.balanca.map(f=>({src:f,tp:'Balança'})),...it.fotos.etiqueta.map(f=>({src:f,tp:'Etiqueta'}))]);
+  return`<div class="fu">
+    <div class="sec-title"><button class="btn btn-g btn-s" onclick="S.histDetail=null;rerender()">${I.back}</button><span style="flex:1;margin-left:6px">Detalhe</span><span style="font-family:var(--mono);font-size:11px;color:var(--muted)">${fmtDate(t.createdAt)}</span></div>
+    <div class="card"><div class="card-head">${I.wa} Texto WhatsApp</div><div class="card-body">
+      <div class="wa-box">${esc(t.textoWhatsapp)}</div>
+      <div class="flex gap8 mt8">
+        <button class="btn btn-o f1" onclick="cpWA('${t.id}')">${I.copy} Copiar</button>
+        <button class="btn btn-wa f1" onclick="sendWAH('${t.id}')">${I.wa} Reenviar</button>
+      </div>
+    </div></div>
+    ${allPh.length>0?`<div class="card"><div class="card-head">${I.img} Fotos (${allPh.length})</div><div class="card-body"><div class="dphotos">${allPh.map(f=>`<div class="dphoto"><img src="${f.src}"/><div class="ptyp">${f.tp}</div></div>`).join('')}</div></div></div>`:''}
+  </div>`;
+}
+window.cpWA=function(id){const t=S.tratativas.find(t=>t.id===id);if(!t)return;if(navigator.clipboard)navigator.clipboard.writeText(t.textoWhatsapp).then(()=>toast('✓ Texto copiado!'));};
+window.sendWAH=function(id){const t=S.tratativas.find(t=>t.id===id);if(!t)return;window.open('https://wa.me/?text='+encodeURIComponent(t.textoWhatsapp),'_blank');};
+
+render();
+</script>
+
+
+</body></html>
