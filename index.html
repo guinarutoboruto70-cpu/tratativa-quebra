@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0045)file:///C:/Users/willi/Downloads/flv-app.html -->
+<!-- saved from url=(0043)file:///C:/Users/willi/Downloads/index.html -->
 <html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,7 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="FLV Controle">
+<meta name="description" content="Controle de quebra de hortifruti">
 <title>FLV · Controle de Quebra</title>
+<link rel="manifest" id="manifest-link" href="blob:null/f8465efb-42ba-4916-9ea6-ab3999b0bd54">
 <link href="./index_files/css2" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -239,8 +241,19 @@ const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 
 // ── PWA INSTALL ───────────────────────────────────────────────────────────────
 let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('install-bar').style.display='flex';});
-window.addEventListener('appinstalled',()=>{$('install-bar').style.display='none';deferredPrompt=null;toast('✓ App instalado!');});
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  window._deferredPrompt=e;
+  $('install-bar').style.display='flex';
+  console.log('✓ Install prompt capturado');
+});
+window.addEventListener('appinstalled',()=>{
+  $('install-bar').style.display='none';
+  deferredPrompt=null;
+  window._deferredPrompt=null;
+  toast('✓ App instalado com sucesso!');
+});
 window.doInstall=async function(){if(!deferredPrompt)return;deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;if(outcome==='accepted'){$('install-bar').style.display='none';deferredPrompt=null;}};
 window.hideInstall=function(){$('install-bar').style.display='none';};
 
@@ -658,6 +671,85 @@ window.cpWA=function(id){const t=S.tratativas.find(t=>t.id===id);if(!t)return;if
 window.sendWAH=function(id){const t=S.tratativas.find(t=>t.id===id);if(!t)return;window.open('https://wa.me/?text='+encodeURIComponent(t.textoWhatsapp),'_blank');};
 
 render();
+
+// ── PWA MANIFEST (inline blob) ────────────────────────────────────────────────
+(function(){
+  const icon192 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAF8mlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgOS4xLWMwMDIgNzkuZGJhM2RhM2I1LCAyMDIzLzEyLzE1LTE4OjA3OjExICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjUuNCAoTWFjaW50b3NoKSIgeG1wOkNyZWF0ZURhdGU9IjIwMjQtMDEtMDFUMDA6MDA6MDAiIHhtcDpNb2RpZnlEYXRlPSIyMDI0LTAxLTAxVDAwOjAwOjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDI0LTAxLTAxVDAwOjAwOjAwIj4gPHhtcE1NOkhpc3Rvcnk+IDwvcmRmOlNlcT4gPC94bXBNTTpIaXN0b3J5PiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pn0A";
+  
+  // Generate SVG icon as data URL
+  const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="32" fill="#2d7a3a"/><text y="130" x="96" text-anchor="middle" font-size="100">🥦</text></svg>`;
+  const svgUrl = 'data:image/svg+xml,' + encodeURIComponent(svgIcon);
+
+  const manifest={
+    name:"FLV Controle",
+    short_name:"FLV",
+    description:"Controle de quebra de hortifruti",
+    start_url:"./",
+    display:"standalone",
+    background_color:"#f4f7f4",
+    theme_color:"#2d7a3a",
+    orientation:"portrait-primary",
+    scope:"./",
+    icons:[
+      {src:svgUrl, sizes:"192x192", type:"image/svg+xml", purpose:"any"},
+      {src:svgUrl, sizes:"512x512", type:"image/svg+xml", purpose:"any maskable"}
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+  const url = URL.createObjectURL(blob);
+  document.getElementById('manifest-link').setAttribute('href', url);
+})();
+
+// ── SERVICE WORKER (via blob URL — funciona em HTTPS/GitHub Pages) ─────────────
+if('serviceWorker' in navigator && location.protocol === 'https:'){
+  const swCode = `
+const CACHE_NAME = 'flv-cache-v3';
+const urlsToCache = ['./'];
+self.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(function(cache) {
+      return cache.addAll(urlsToCache);
+    }).then(function() {
+      return self.skipWaiting();
+    })
+  );
+});
+self.addEventListener('activate', function(event) {
+  event.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.filter(function(name) { return name !== CACHE_NAME; })
+          .map(function(name) { return caches.delete(name); })
+      );
+    }).then(function() { return self.clients.claim(); })
+  );
+});
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request).then(function(response) {
+      if (response) return response;
+      return fetch(event.request).then(function(response) {
+        if (!response || response.status !== 200 || response.type !== 'basic') return response;
+        var responseToCache = response.clone();
+        caches.open(CACHE_NAME).then(function(cache) { cache.put(event.request, responseToCache); });
+        return response;
+      }).catch(function() { return caches.match('./'); });
+    })
+  );
+});
+  `;
+  const blob = new Blob([swCode], {type: 'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl, {scope: './'})
+    .then(reg => {
+      console.log('✓ Service Worker registrado');
+      // Força exibir o banner de instalação se já foi adiado
+      if(window._deferredPrompt) {
+        document.getElementById('install-bar').style.display = 'flex';
+      }
+    })
+    .catch(err => console.warn('SW não registrado:', err));
+}
 </script>
 
 
